@@ -33,7 +33,7 @@ export default [
    * pluginVue.configs["flat/recommended"]
    *   -> Above, plus rules to enforce subjective community defaults to ensure consistency.
    */
-  ...pluginVue.configs[ 'flat/essential' ],
+  ...pluginVue.configs['flat/essential'],
 
   // https://github.com/vuejs/eslint-config-typescript
   ...vueTsEslintConfig({
@@ -42,53 +42,64 @@ export default [
     // https://typescript-eslint.io/users/configs#recommended-configurations
     extends: [
       // By default, only the recommended rules are enabled.
-      'recommended'
+      'recommended',
       // You can also manually enable the stylistic rules.
-      // "stylistic",
+      'stylistic',
 
       // Other utility configurations, such as 'eslintRecommended', (note that it's in camelCase)
       // are also extendable here. But we don't recommend using them directly.
-    ]
+    ],
+    rules: {
+      'vue/script-indent': ['error', 4],
+
+    },
   }),
 
   {
     languageOptions: {
       ecmaVersion: 'latest',
-      sourceType: 'module',
-
       globals: {
         ...globals.browser,
         ...globals.node, // SSR, Electron, config files
-        process: 'readonly', // process.env.*
-        ga: 'readonly', // Google Analytics
-        cordova: 'readonly',
         Capacitor: 'readonly',
+        browser: 'readonly', // BEX related
         chrome: 'readonly', // BEX related
-        browser: 'readonly' // BEX related
-      }
+        cordova: 'readonly',
+        ga: 'readonly', // Google Analytics
+        process: 'readonly', // process.env.*
+      },
+      sourceType: 'module',
     },
 
     // add your custom rules here
     rules: {
-      'prefer-promise-reject-errors': 'off',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports' }
+      '@typescript-eslint/explicit-function-return-type': [
+        `error`,
+        {
+          allowHigherOrderFunctions: false,
+        },
       ],
-
-      // allow debugger during development only
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-    }
+      indent: [
+        `error`,
+        2,
+        {
+          SwitchCase: 1,
+        },
+      ],
+      'prefer-promise-reject-errors': 'off',
+      quotes: [`error`, `backtick`],
+      'sort-keys': ['warn', 'asc'],
+    },
   },
 
   {
-    files: [ 'src-pwa/custom-service-worker.ts' ],
+    files: ['src-pwa/custom-service-worker.ts'],
     languageOptions: {
       globals: {
-        ...globals.serviceworker
-      }
-    }
+        ...globals.serviceworker,
+      },
+    },
   },
 
-  prettierSkipFormatting
+  prettierSkipFormatting,
 ]
