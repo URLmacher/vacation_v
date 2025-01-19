@@ -1,12 +1,15 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
-
 import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
 import { templateCompilerOptions } from '@tresjs/core'
 
 export default defineConfig((ctx) => {
   return {
+    // path alias
+    alias: {
+      "@": fileURLToPath(new URL('./src', import.meta.url)),
+    },
     // animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
     animations: [],
