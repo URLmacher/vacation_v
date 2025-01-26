@@ -51,7 +51,7 @@
         :look-at="[0, 0, 0]"
       />
       <OrbitControls />
-      <CalendarGrid :month="1" />
+      <CalendarGrid :month="0" />
     </TresCanvas>
   </q-page>
 </template>

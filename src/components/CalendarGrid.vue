@@ -1,14 +1,25 @@
 <template>
-  <FloatingText text="TresJS" :position="[0, 7, 0]" />
+  <FloatingText :text="monthLabel" :position="[0, 7, 0]" />
   <TresGroup name="calendar-grid" :rotation="[-Math.PI / 2, 0, 0]">
-    <TresGroup v-for="row in grid.rows" :key="`row-${row}`">
-      <TresGroup v-for="col in grid.cols" :key="`col-${col}-${row}`">
-        <TresMesh :position="computePosition(col, row)">
+    <TresGroup
+      v-for="(week, weekIndex) in calendarDisplay"
+      :key="`week-${weekIndex}`"
+    >
+      <TresGroup
+        v-for="(day, dayIndex) in week"
+        :key="`day-${dayIndex}-${weekIndex}`"
+      >
+        <TresMesh :position="day.position" :scale="[1.5, 0.5, 1.5]">
           <TresBoxGeometry />
-          <TresMeshBasicMaterial color="#3e2917" />
-          <!-- TODO: is rendered backwards somehow -->
+          <TresMeshBasicMaterial
+            :color="day.color"
+            roughness="0.8"
+            metalness="0.2"
+            :opacity="day.date ? 1 : 0"
+            :transparent="true"
+          />
           <FloatingText
-            :text="getDateLabel(col, row)"
+            :text="day.dateLabel"
             :position="[0, -0.5, 0]"
             :rotation="[1.5, 0, 0]"
             :scale="[0.5, 0.5, 0.5]"
@@ -20,46 +31,69 @@
 </template>
 
 <script setup lang="ts">
-  import { format } from 'date-fns';
-import FloatingText from 'src/components/FloatingText.vue';
-import { getDatesOfMonth } from 'src/utils/date.utils';
-import { computed, reactive, ref, toRefs, watch } from 'vue';
+  import { format, isToday, isWeekend } from 'date-fns';
+  import FloatingText from 'src/components/FloatingText.vue';
+  import { getDatesOfMonth, getNameOfMonth } from 'src/utils/date.utils';
+  import { computed, reactive, ref, toRefs, watch } from 'vue';
+
+  interface ICalendarDisplay {
+    date: Date | null;
+    dateLabel: string;
+    position: [x: number, z: number, y: number];
+    color: string;
+  }
 
   const props = defineProps<{ month: number }>();
   const { month } = toRefs(props);
 
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
-  const datesOfMonth = ref<(Date | null)[]>([]);
-
-  const gridOffset = computed<{ x: number; z: number }>(() => {
-    const x = ((grid.cols - 1) * grid.gutter) / 2;
-    const z = ((grid.rows - 1) * grid.gutter) / 2;
-
-    return { x, z };
-  });
+  const calendarDisplay = ref<ICalendarDisplay[][]>([]);
 
   const computePosition = (
     col: number,
     row: number
-  ): [x: number, z: number, y: number] => [
-    (col - 1) * grid.gutter - gridOffset.value.x,
-    0,
-    (row - 1) * grid.gutter - gridOffset.value.z
-  ];
+  ): [x: number, z: number, y: number] => {
+    const centerX = ((grid.cols - 1) * grid.gutter) / 2;
+    const centerZ = ((grid.rows - 1) * grid.gutter) / 2;
 
-  const getDateLabel = (col: number, row: number): string => {
-    const index = (row - 1) * grid.cols + (col - 1);
-    const date = datesOfMonth.value[index];
-    console.log(date);
-    return date ? format(date, 'd') : '';
+    // Flip the Z position to make sure the first row is at the front
+    return [col * grid.gutter - centerX, 0, -(row * grid.gutter - centerZ)];
   };
 
-  watch(
-    month,
-    () => {
-      datesOfMonth.value = getDatesOfMonth(month.value, grid.cols * grid.rows);
-      console.log(datesOfMonth.value);
-    },
-    { immediate: true }
-  );
+  const getBoxColor = (date: Date | null): string => {
+    if (!date) return '#fff';
+    if (isWeekend(date)) return '#FFA07A';
+    if (isToday(date)) return '#90EE90';
+    return '#FFD700';
+  };
+
+  const updateCalendarDisplay = (): void => {
+    const datesOfMonth = getDatesOfMonth(month.value, grid.cols * grid.rows);
+    const display: ICalendarDisplay[][] = [];
+
+    for (let i = 0; i < grid.rows; i++) {
+      const row: ICalendarDisplay[] = [];
+
+      for (let j = 0; j < grid.cols; j++) {
+        const index = i * grid.cols + j;
+        const date = datesOfMonth[index] ?? null;
+
+        row.push({
+          color: getBoxColor(date),
+          date: date,
+          dateLabel: date ? format(date, 'd') : '',
+          position: computePosition(j, i)
+        });
+      }
+
+      display.push(row);
+    }
+    calendarDisplay.value = display;
+  };
+
+  const monthLabel = computed<string>(() => {
+    return getNameOfMonth(month.value);
+  });
+
+  watch(month, updateCalendarDisplay, { immediate: true });
 </script>
