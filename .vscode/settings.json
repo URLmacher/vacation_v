@@ -39,5 +39,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.pasteAs.enabled": false,
-  "editor.pasteAs.showPasteSelector": "never"
+  "editor.pasteAs.showPasteSelector": "never",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

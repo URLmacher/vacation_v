@@ -1,6 +1,10 @@
 <template>
-  <FloatingText :text="monthLabel" :position="[0, 7, 0]" />
-  <TresGroup name="calendar-grid" :rotation="[-Math.PI / 2, 0, 0]">
+  <FloatingText :text="monthLabel" :position="[0, 7, 0]" :size="0.8" />
+  <TresGroup
+    name="calendar-grid"
+    :rotation="[-Math.PI / 2, 0, 0]"
+    ref="groupRef"
+  >
     <TresGroup
       v-for="(week, weekIndex) in calendarDisplay"
       :key="`week-${weekIndex}`"
@@ -9,50 +13,35 @@
         v-for="(day, dayIndex) in week"
         :key="`day-${dayIndex}-${weekIndex}`"
       >
-        <TresMesh :position="day.position" :scale="[1.5, 0.5, 1.5]">
-          <TresBoxGeometry />
-          <TresMeshBasicMaterial
-            :color="day.color"
-            roughness="0.8"
-            metalness="0.2"
-            :opacity="day.date ? 1 : 0"
-            :transparent="true"
-          />
-          <FloatingText
-            :text="day.dateLabel"
-            :position="[0, -0.5, 0]"
-            :rotation="[1.5, 0, 0]"
-            :scale="[0.5, 0.5, 0.5]"
-          />
-        </TresMesh>
+        <CalendarDay :day="day" @click="handleDayClick(day)" />
       </TresGroup>
     </TresGroup>
   </TresGroup>
 </template>
 
 <script setup lang="ts">
+  import { TresInstance } from '@tresjs/core/types.js';
   import { format, isToday, isWeekend } from 'date-fns';
+  import CalendarDay from 'src/components/CalendarDay.vue';
   import FloatingText from 'src/components/FloatingText.vue';
+  import { ICalendarDisplay, TAxis } from 'src/definitions';
   import { getDatesOfMonth, getNameOfMonth } from 'src/utils/date.utils';
-  import { computed, reactive, ref, toRefs, watch } from 'vue';
+  import { computed, reactive, ref, shallowRef, toRefs, watch } from 'vue';
 
-  interface ICalendarDisplay {
-    date: Date | null;
-    dateLabel: string;
-    position: [x: number, z: number, y: number];
-    color: string;
-  }
+  const emit = defineEmits<(e: 'click:day', val: ICalendarDisplay) => void>();
 
   const props = defineProps<{ month: number }>();
   const { month } = toRefs(props);
 
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
   const calendarDisplay = ref<ICalendarDisplay[][]>([]);
+  const groupRef = shallowRef<TresInstance>();
 
-  const computePosition = (
-    col: number,
-    row: number
-  ): [x: number, z: number, y: number] => {
+  const handleDayClick = (day: ICalendarDisplay): void => {
+    emit('click:day', day);
+  };
+
+  const computePosition = (col: number, row: number): TAxis => {
     const centerX = ((grid.cols - 1) * grid.gutter) / 2;
     const centerZ = ((grid.rows - 1) * grid.gutter) / 2;
 
@@ -67,7 +56,7 @@
     return '#FFD700';
   };
 
-  const updateCalendarDisplay = (): void => {
+  const updateCalendarDisplay = async (): Promise<void> => {
     const datesOfMonth = getDatesOfMonth(month.value, grid.cols * grid.rows);
     const display: ICalendarDisplay[][] = [];
 
