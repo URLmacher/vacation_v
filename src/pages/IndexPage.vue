@@ -1,10 +1,6 @@
 <template>
   <q-page>
-    <TresCanvas
-      clear-color="#82DBC5"
-      window-size
-      preset="realistic"
-    >
+    <TresCanvas clear-color="#82DBC5" window-size preset="realistic">
       <TresPerspectiveCamera
         :position="[0, 4, 30]"
         :look-at="[0, 0, 0]"
@@ -16,7 +12,8 @@
         <CalendarGrid
           v-if="month === currentMonth"
           :month="month"
-          @click:day="switchMonth()"
+          :days-clicked-on="daysClickedOn"
+          @click:day="handleDayClick"
         />
       </template>
     </TresCanvas>
@@ -24,14 +21,40 @@
 </template>
 
 <script setup lang="ts">
-  import { TresCanvas } from '@tresjs/core';
   import { OrbitControls } from '@tresjs/cientos';
+  import { TresCanvas } from '@tresjs/core';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
   import SceneLighting from 'src/components/SceneLighting.vue';
   import { DATES } from 'src/data';
-  import { computed, ref, onMounted } from 'vue';
+  import { ICalendarDisplay } from 'src/definitions';
+  import {
+    isDateSelected,
+    isEveryVacationDayOfMonthSelected,
+    isVacationDay
+  } from 'src/utils/date.utils';
+  import { computed, onMounted, ref } from 'vue';
 
+  const daysClickedOn = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
+
+  const handleDayClick = (day: ICalendarDisplay): void => {
+    if (
+      !day.date ||
+      !isVacationDay(day.date) ||
+      isDateSelected(day.date, daysClickedOn.value)
+    ) {
+      return;
+    }
+
+    daysClickedOn.value = [...daysClickedOn.value, day];
+
+    if (
+      currentMonth.value &&
+      isEveryVacationDayOfMonthSelected(currentMonth.value, daysClickedOn.value)
+    ) {
+      switchMonth();
+    }
+  };
 
   const months = computed<number[]>(() =>
     DATES.reduce<number[]>((acc, dateStr) => {

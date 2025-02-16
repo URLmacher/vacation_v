@@ -25,20 +25,30 @@
   import CalendarDay from 'src/components/CalendarDay.vue';
   import FloatingText from 'src/components/FloatingText.vue';
   import { ICalendarDisplay, TAxis } from 'src/definitions';
-  import { getDatesOfMonth, getNameOfMonth } from 'src/utils/date.utils';
+  import {
+    getDatesOfMonthFilled,
+    getNameOfMonth,
+    isDateSelected,
+    isVacationDay
+  } from 'src/utils/date.utils';
   import { computed, reactive, ref, shallowRef, toRefs, watch } from 'vue';
 
   const emit = defineEmits<(e: 'click:day', val: ICalendarDisplay) => void>();
 
-  const props = defineProps<{ month: number }>();
-  const { month } = toRefs(props);
+  const props = defineProps<{
+    month: number;
+    daysClickedOn: ICalendarDisplay[];
+  }>();
+  const { month, daysClickedOn } = toRefs(props);
 
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
   const calendarDisplay = ref<ICalendarDisplay[][]>([]);
   const groupRef = shallowRef<TresInstance>();
 
   const handleDayClick = (day: ICalendarDisplay): void => {
-    emit('click:day', day);
+    if (day.date && isVacationDay(day.date)) {
+      emit('click:day', day);
+    }
   };
 
   const computePosition = (col: number, row: number): TAxis => {
@@ -51,13 +61,18 @@
 
   const getBoxColor = (date: Date | null): string => {
     if (!date) return '#fff';
+    if (isDateSelected(date, daysClickedOn.value)) return '#00A36C';
+    if (isVacationDay(date)) return '#00FFFF';
     if (isWeekend(date)) return '#FFA07A';
     if (isToday(date)) return '#90EE90';
     return '#FFD700';
   };
 
   const updateCalendarDisplay = async (): Promise<void> => {
-    const datesOfMonth = getDatesOfMonth(month.value, grid.cols * grid.rows);
+    const datesOfMonth = getDatesOfMonthFilled(
+      month.value,
+      grid.cols * grid.rows
+    );
     const display: ICalendarDisplay[][] = [];
 
     for (let i = 0; i < grid.rows; i++) {
@@ -84,5 +99,5 @@
     return getNameOfMonth(month.value);
   });
 
-  watch(month, updateCalendarDisplay, { immediate: true });
+  watch([month, daysClickedOn], updateCalendarDisplay, { immediate: true });
 </script>
