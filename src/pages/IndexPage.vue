@@ -1,13 +1,7 @@
 <template>
   <q-page>
     <TresCanvas clear-color="#82DBC5" window-size preset="realistic">
-      <TresPerspectiveCamera
-        :position="[0, 4, 30]"
-        :look-at="[0, 0, 0]"
-        :fov="45"
-      />
       <SceneLighting />
-      <OrbitControls />
       <template v-for="month of months" :key="month">
         <CalendarGrid
           v-if="month === currentMonth"
@@ -16,12 +10,22 @@
           @click:day="handleDayClick"
         />
       </template>
+      <TresPerspectiveCamera
+        :position="[0, 0, 30]"
+        :fov="45"
+        :aspect="1"
+        :near="0.1"
+        :far="1000"
+      />
+      <fpsControls />
+      <Sky />
     </TresCanvas>
   </q-page>
 </template>
 
 <script setup lang="ts">
-  import { OrbitControls } from '@tresjs/cientos';
+  import { fpsControls } from '@jaimebboyjt/tres-fps-controls';
+  import { Sky } from '@tresjs/cientos';
   import { TresCanvas } from '@tresjs/core';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
   import SceneLighting from 'src/components/SceneLighting.vue';

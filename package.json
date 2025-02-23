@@ -16,6 +16,7 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
+    "@jaimebboyjt/tres-fps-controls": "^0.0.54",
     "@quasar/extras": "^1.16.4",
     "@tresjs/cientos": "^4.0.3",
     "@tresjs/core": "^4.3.2",
