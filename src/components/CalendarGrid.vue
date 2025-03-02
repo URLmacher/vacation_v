@@ -1,7 +1,8 @@
 <template>
-  <FloatingText :text="monthLabel" :position="[0, 7, 0]" :size="0.8" />
+  <FloatingText :text="monthLabel" :position="[0, 11.5, 0]" :size="0.8" />
   <TresGroup
     name="calendar-grid"
+    :position="[0, 4, 0]"
     :rotation="[-Math.PI / 2, 0, 0]"
     ref="groupRef"
   >

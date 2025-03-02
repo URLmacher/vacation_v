@@ -1,6 +1,7 @@
 <template>
   <q-page>
-    <TresCanvas clear-color="#82DBC5" window-size preset="realistic">
+    <TresCanvas window-size>
+      <SkyAndAudio />
       <SceneLighting />
       <template v-for="month of months" :key="month">
         <CalendarGrid
@@ -17,18 +18,22 @@
         :near="0.1"
         :far="1000"
       />
-      <fpsControls />
-      <Sky />
+      <fpsControls :moveSpeed="0.3" @isLock="handleControlLock">
+        <Suspense>
+          <ShootyGun ref="shootyGunRef" />
+        </Suspense>
+      </fpsControls>
     </TresCanvas>
   </q-page>
 </template>
 
 <script setup lang="ts">
   import { fpsControls } from '@jaimebboyjt/tres-fps-controls';
-  import { Sky } from '@tresjs/cientos';
   import { TresCanvas } from '@tresjs/core';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
   import SceneLighting from 'src/components/SceneLighting.vue';
+  import ShootyGun from 'src/components/ShootyGun.vue';
+  import SkyAndAudio from 'src/components/SkyAndAudio.vue';
   import { DATES } from 'src/data';
   import { ICalendarDisplay } from 'src/definitions';
   import {
@@ -36,8 +41,9 @@
     isEveryVacationDayOfMonthSelected,
     isVacationDay
   } from 'src/utils/date.utils';
-  import { computed, onMounted, ref } from 'vue';
+  import { computed, onMounted, ref, useTemplateRef } from 'vue';
 
+  const shootyGunRef = useTemplateRef('shootyGunRef');
   const daysClickedOn = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
 
@@ -80,6 +86,10 @@
       : 0;
     const nextIndex = (currentIndex + 1) % months.value.length;
     currentMonth.value = months.value?.[nextIndex] ?? null;
+  };
+
+  const handleControlLock = (): void => {
+    shootyGunRef.value?.showGun();
   };
 
   onMounted(switchMonth);
