@@ -1,7 +1,5 @@
 <template>
-  <Suspense>
-    <GlobalAudio src="/fake_doom_demo/02. At Doom's Gate.mp3" />
-  </Suspense>
+  <GlobalAudio src="/fake_doom_demo/02. At Doom's Gate.mp3" />
 </template>
 
 <script setup lang="ts">

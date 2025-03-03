@@ -1,8 +1,9 @@
 <template>
   <q-page>
     <TresCanvas window-size>
-      <SkyAndAudio />
-      <SceneLighting />
+      <Suspense>
+        <SandyBeach />
+      </Suspense>
       <template v-for="month of months" :key="month">
         <CalendarGrid
           v-if="month === currentMonth"
@@ -11,6 +12,7 @@
           @click:day="handleDayClick"
         />
       </template>
+
       <TresPerspectiveCamera
         :position="[0, 0, 30]"
         :fov="45"
@@ -18,6 +20,7 @@
         :near="0.1"
         :far="1000"
       />
+
       <fpsControls :moveSpeed="0.3" @isLock="handleControlLock">
         <Suspense>
           <ShootyGun ref="shootyGunRef" />
@@ -31,9 +34,8 @@
   import { fpsControls } from '@jaimebboyjt/tres-fps-controls';
   import { TresCanvas } from '@tresjs/core';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
-  import SceneLighting from 'src/components/SceneLighting.vue';
   import ShootyGun from 'src/components/ShootyGun.vue';
-  import SkyAndAudio from 'src/components/SkyAndAudio.vue';
+  import SandyBeach from 'src/components/SandyBeach.vue';
   import { DATES } from 'src/data';
   import { ICalendarDisplay } from 'src/definitions';
   import {
