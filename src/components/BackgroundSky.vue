@@ -1,12 +1,7 @@
-<template>
-  <GlobalAudio src="/fake_doom_demo/02. At Doom's Gate.mp3" />
-</template>
-
 <script setup lang="ts">
   import { useTresContext } from '@tresjs/core';
   import { onMounted } from 'vue';
   import { PMREMGenerator } from 'three';
-  import { GlobalAudio } from '@tresjs/cientos';
   import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
   const { renderer, scene } = useTresContext();

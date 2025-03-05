@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page @click="startAudio">
     <TresCanvas window-size>
       <Suspense>
         <SandyBeach />
@@ -21,12 +21,17 @@
         :far="1000"
       />
 
-      <fpsControls :moveSpeed="0.3" @isLock="handleControlLock">
+      <fpsControls
+        :moveSpeed="0.3"
+        @isLock="handleControlLock"
+        :controlsKeys="keyboardMap"
+      >
         <Suspense>
           <ShootyGun ref="shootyGunRef" />
         </Suspense>
       </fpsControls>
     </TresCanvas>
+    <button id="audioToggle">Audio</button>
   </q-page>
 </template>
 
@@ -34,8 +39,8 @@
   import { fpsControls } from '@jaimebboyjt/tres-fps-controls';
   import { TresCanvas } from '@tresjs/core';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
-  import ShootyGun from 'src/components/ShootyGun.vue';
   import SandyBeach from 'src/components/SandyBeach.vue';
+  import ShootyGun from 'src/components/ShootyGun.vue';
   import { DATES } from 'src/data';
   import { ICalendarDisplay } from 'src/definitions';
   import {
@@ -48,6 +53,34 @@
   const shootyGunRef = useTemplateRef('shootyGunRef');
   const daysClickedOn = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
+
+  const gunSound = new Audio('/sounds/gun_shoot.mp3');
+  const backgroundSound = new Audio('/sounds/beach.mp3');
+
+  const playGunSound = async (): Promise<void> => {
+    gunSound.volume = 0.2;
+    gunSound.pause();
+    gunSound.currentTime = 0;
+    gunSound.play();
+    await gunSound.play();
+  };
+
+  const handleShoot = (): void => {
+    playGunSound();
+    console.log('shooting');
+  };
+
+  const keyboardMap = [
+    { action: handleShoot, name: 'leftClick' },
+    { key: 'q', name: 'run', speed: 0.5 },
+    { key: 'e', name: 'creep' },
+    {
+      actions: [],
+      name: 'actions'
+    },
+    { action: (): void => console.log('up'), name: 'wheelActionUp' },
+    { action: (): void => console.log('down'), name: 'wheelActionDown' }
+  ];
 
   const handleDayClick = (day: ICalendarDisplay): void => {
     if (
@@ -92,6 +125,11 @@
 
   const handleControlLock = (): void => {
     shootyGunRef.value?.showGun();
+  };
+
+  const startAudio = async (): Promise<void> => {
+    backgroundSound.volume = 0.2;
+    await backgroundSound.play();
   };
 
   onMounted(switchMonth);
