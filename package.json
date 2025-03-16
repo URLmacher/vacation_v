@@ -21,6 +21,7 @@
     "@tresjs/cientos": "^4.0.3",
     "@tresjs/core": "^4.3.2",
     "date-fns": "^4.1.0",
+    "gsap": "^3.12.7",
     "quasar": "^2.16.0",
     "three": "^0.172.0",
     "vue": "^3.4.18",

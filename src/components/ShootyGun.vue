@@ -7,11 +7,24 @@
       :rotation="[0, -3, 0]"
     />
   </Suspense>
+  <Suspense>
+    <TresMesh ref="muzzleFlashRef">
+      <TresSphereGeometry :args="[0.4, 32, 32]" />
+      <TresMeshStandardMaterial
+        :map="muzzleFlashTexture"
+        :transparent="true"
+        :emissive="0xffffff"
+        :emissiveIntensity="1"
+        :opacity="1"
+      />
+    </TresMesh>
+  </Suspense>
 </template>
 
 <script setup lang="ts">
   import { GLTFModel } from '@tresjs/cientos';
   import { useTresContext } from '@tresjs/core';
+  import gsap from 'gsap';
   import { ICalendarDisplay } from 'src/definitions';
   import {
     Intersection,
@@ -26,7 +39,7 @@
     Vector2,
     Vector3
   } from 'three';
-  import { ref } from 'vue';
+  import { ref, shallowRef } from 'vue';
 
   const { scene, camera } = useTresContext();
 
@@ -35,6 +48,8 @@
   }>();
 
   const gunPosition = ref([-1000, -1000, -1000]);
+  const canShoot = ref(true);
+  const cooldownTime = 300;
   const impacts: Mesh[] = [];
 
   const raycaster = new Raycaster();
@@ -42,6 +57,21 @@
   const gunSound = new Audio('/sounds/gun_shoot.mp3');
   const textureLoader = new TextureLoader();
   const bulletHoleTexture = textureLoader.load('/textures/bullet_hole.png');
+  const muzzleFlashTexture = textureLoader.load('/textures/flash_shoot.png');
+  const muzzleFlashRef = shallowRef<Mesh | undefined>();
+
+  const showMuzzleFlash = (): void => {
+    const currentX = gunPosition.value[0];
+    const currentY = gunPosition.value[1];
+    const currentZ = gunPosition.value[2];
+    if (!currentX || !currentY || !currentZ || !muzzleFlashRef.value) return;
+    muzzleFlashRef.value.position.set(currentX, currentY, currentZ - 4);
+    muzzleFlashRef.value.visible = true;
+    setTimeout(() => {
+      if (!muzzleFlashRef.value) return;
+      muzzleFlashRef.value.visible = false;
+    }, 75);
+  };
 
   const playGunSound = async (): Promise<void> => {
     gunSound.volume = 0.2;
@@ -55,6 +85,33 @@
     impacts.forEach((impactMesh) => {
       scene.value.remove(impactMesh);
       impactMesh.geometry.dispose();
+    });
+  };
+
+  const handleRecoil = (): void => {
+    const recoilOffset = 0.1;
+    gsap.to(gunPosition.value, {
+      duration: 0.05,
+      onComplete: () => {
+        gsap.to(gunPosition.value, {
+          duration: 0.1,
+          ease: 'power2.out',
+          onUpdate: () => {
+            const currentX = gunPosition.value[0];
+            const currentY = gunPosition.value[1];
+            const currentZ = gunPosition.value[2];
+            if (!currentX || !currentY || !currentZ) return;
+            gunPosition.value = [currentX, currentY, currentZ - recoilOffset];
+          }
+        });
+      },
+      onUpdate: () => {
+        const currentX = gunPosition.value[0];
+        const currentY = gunPosition.value[1];
+        const currentZ = gunPosition.value[2];
+        if (!currentX || !currentY || !currentZ) return;
+        gunPosition.value = [currentX, currentY, currentZ + recoilOffset];
+      }
     });
   };
 
@@ -94,14 +151,15 @@
   };
 
   const handleShoot = (): void => {
-    if (!camera.value) return;
+    if (!canShoot.value || !camera.value) return;
+    canShoot.value = false;
     playGunSound();
 
     raycaster.setFromCamera(mouse, camera.value);
+    showMuzzleFlash();
+    handleRecoil();
 
-    // Check for intersections with objects in the scene
     const intersects = raycaster.intersectObjects(scene.value.children, true);
-
     if (intersects.length > 0) {
       const impactPoint = intersects[0]?.point;
       const impactNormal = intersects[0]?.face?.normal;
@@ -110,6 +168,10 @@
         handleTargetHit(intersects);
       }
     }
+
+    setTimeout(() => {
+      canShoot.value = true;
+    }, cooldownTime);
   };
 
   const showGun = (): void => {
