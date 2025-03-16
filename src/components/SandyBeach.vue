@@ -1,7 +1,7 @@
 <template>
   <BackgroundSky />
   <SceneLighting />
-  <Ocean :position="[0, -10, 0]" />
+  <Ocean :position="[0, -10, 0]" :user-data="'isNonTarget'" />
   <TresMesh :position="[0, -10, 0]" :rotation="[-Math.PI / 2, 0, 0]">
     <TresPlaneGeometry :args="[100, 100, 200, 200]" />
     <TresMeshStandardMaterial

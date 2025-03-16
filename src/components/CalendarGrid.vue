@@ -1,5 +1,10 @@
 <template>
-  <FloatingText :text="monthLabel" :position="[0, 11.5, 0]" :size="0.8" />
+  <FloatingText
+    :text="monthLabel"
+    :position="[0, 11.5, 0]"
+    :size="0.8"
+    :visible="true"
+  />
   <TresGroup
     name="calendar-grid"
     :position="[0, 4, 0]"

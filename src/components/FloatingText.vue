@@ -7,6 +7,8 @@
       :position="position"
       :rotation="rotation"
       :size="size"
+      :user-data="'isNonTarget'"
+      :visible="visible"
     >
       <TresMeshNormalMaterial />
     </Text3D>
@@ -26,6 +28,7 @@
       position?: TAxis;
       rotation?: TAxis;
       size: number;
+      visible?: boolean;
     }>(),
     {
       position: () => [0, 0, 0] as TAxis,

@@ -8,7 +8,7 @@
     />
   </Suspense>
   <Suspense>
-    <TresMesh ref="muzzleFlashRef">
+    <TresMesh ref="muzzleFlashRef" :visible="false">
       <TresSphereGeometry :args="[0.4, 32, 32]" />
       <TresMeshStandardMaterial
         :map="muzzleFlashTexture"
@@ -115,21 +115,29 @@
     });
   };
 
-  const spawnBulletImpact = (position: Vector3, normal: Vector3): void => {
+  const spawnBulletImpact = (
+    position: Vector3,
+    normal: Vector3,
+    object?: Object3D
+  ): void => {
+    if (!object?.visible || object.userData.isNonTarget) return;
+
     const impactMaterial = new MeshBasicMaterial({
       depthWrite: false,
       map: bulletHoleTexture,
       transparent: true
     });
+
     const impactGeometry = new PlaneGeometry(0.5, 0.5);
     const impactMesh = new Mesh(impactGeometry, impactMaterial);
 
+    // Adjust position to avoid hitting the floor
     impactMesh.position.copy(position);
 
     const up =
       Math.abs(normal.y) > 0.99
-        ? new Vector3(1, 0, 0.5)
-        : new Vector3(0, 1, 0.5);
+        ? new Vector3(1, 0, 0.6) // For vertical surfaces
+        : new Vector3(0, 1, 0.6); // For other surfaces
 
     const quaternion = new Quaternion().setFromUnitVectors(up, normal);
     impactMesh.quaternion.copy(quaternion);
@@ -160,11 +168,14 @@
     handleRecoil();
 
     const intersects = raycaster.intersectObjects(scene.value.children, true);
+
     if (intersects.length > 0) {
       const impactPoint = intersects[0]?.point;
       const impactNormal = intersects[0]?.face?.normal;
+
       if (impactPoint && impactNormal) {
-        spawnBulletImpact(impactPoint, impactNormal);
+        // Pass the object that was hit to spawnBulletImpact
+        spawnBulletImpact(impactPoint, impactNormal, intersects[0]?.object);
         handleTargetHit(intersects);
       }
     }

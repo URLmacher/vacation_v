@@ -3,6 +3,7 @@
     :position="day.position"
     :scale="[1.5, 0.5, 1.5]"
     ref="meshRef"
+    :visible="!!day.date"
     :user-data="day"
   >
     <TresBoxGeometry />
@@ -18,6 +19,7 @@
       :position="[0, -0.9, 0]"
       :rotation="[1.5, 0, 0]"
       :size="0.3"
+      :visible="!!day.date"
     />
   </TresMesh>
 </template>
