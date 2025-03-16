@@ -53,25 +53,13 @@
   const shootyGunRef = useTemplateRef('shootyGunRef');
   const daysClickedOn = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
-
-  const gunSound = new Audio('/sounds/gun_shoot.mp3');
   const backgroundSound = new Audio('/sounds/beach.mp3');
 
-  const playGunSound = async (): Promise<void> => {
-    gunSound.volume = 0.2;
-    gunSound.pause();
-    gunSound.currentTime = 0;
-    gunSound.play();
-    await gunSound.play();
-  };
-
-  const handleShoot = (): void => {
-    playGunSound();
-    console.log('shooting');
-  };
-
   const keyboardMap = [
-    { action: handleShoot, name: 'leftClick' },
+    {
+      action: (): void => shootyGunRef.value?.handleShoot(),
+      name: 'leftClick'
+    },
     { key: 'q', name: 'run', speed: 0.5 },
     { key: 'e', name: 'creep' },
     {
@@ -121,6 +109,7 @@
       : 0;
     const nextIndex = (currentIndex + 1) % months.value.length;
     currentMonth.value = months.value?.[nextIndex] ?? null;
+    shootyGunRef.value?.removeBulletHoles();
   };
 
   const handleControlLock = (): void => {

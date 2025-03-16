@@ -1,3 +1,5 @@
+<!-- <template></template> -->
+
 <script setup lang="ts">
   import { useTresContext } from '@tresjs/core';
   import { onMounted } from 'vue';
@@ -9,7 +11,7 @@
   onMounted(() => {
     const loader = new RGBELoader();
     loader.load(
-      '/fake_doom_demo/kloofendal_overcast_puresky_2k.hdr',
+      '/textures/kloofendal_overcast_puresky_2k.hdr',
       (texture) => {
         const pmremGenerator = new PMREMGenerator(renderer.value);
         const envMap = pmremGenerator.fromEquirectangular(texture).texture;

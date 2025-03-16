@@ -24,10 +24,10 @@
 
   const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] =
     await useTexture([
-      '/fake_doom_demo/Ground055L_1K-JPG_Color.jpg',
-      '/fake_doom_demo/Ground055L_1K-JPG_Displacement.jpg',
-      '/fake_doom_demo/Ground055L_1K-JPG_NormalGL.jpg',
-      '/fake_doom_demo/Ground055L_1K-JPG_Roughness.jpg',
-      '/fake_doom_demo/Ground055L_1K-JPG_AmbientOcclusion.jpg'
+      '/textures/floor/Ground055L_1K-JPG_Color.jpg',
+      '/textures/floor/Ground055L_1K-JPG_Displacement.jpg',
+      '/textures/floor/Ground055L_1K-JPG_NormalGL.jpg',
+      '/textures/floor/Ground055L_1K-JPG_Roughness.jpg',
+      '/textures/floor/Ground055L_1K-JPG_AmbientOcclusion.jpg'
     ]);
 </script>
