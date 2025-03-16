@@ -9,7 +9,6 @@
           v-if="month === currentMonth"
           :month="month"
           :days-clicked-on="daysClickedOn"
-          @click:day="handleDayClick"
         />
       </template>
 
@@ -27,7 +26,7 @@
         :controlsKeys="keyboardMap"
       >
         <Suspense>
-          <ShootyGun ref="shootyGunRef" />
+          <ShootyGun ref="shootyGunRef" @hit:target="handleDayClick"/>
         </Suspense>
       </fpsControls>
     </TresCanvas>
@@ -108,8 +107,8 @@
       ? months.value.indexOf(currentMonth.value)
       : 0;
     const nextIndex = (currentIndex + 1) % months.value.length;
-    currentMonth.value = months.value?.[nextIndex] ?? null;
     shootyGunRef.value?.removeBulletHoles();
+    currentMonth.value = months.value?.[nextIndex] ?? null;
   };
 
   const handleControlLock = (): void => {

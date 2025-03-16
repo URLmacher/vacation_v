@@ -5,4 +5,5 @@ export interface ICalendarDisplay {
   dateLabel: string;
   position: TAxis;
   color: string;
+  isVacationDay: boolean;
 }

@@ -1,5 +1,10 @@
 <template>
-  <TresMesh :position="day.position" :scale="[1.5, 0.5, 1.5]" ref="meshRef">
+  <TresMesh
+    :position="day.position"
+    :scale="[1.5, 0.5, 1.5]"
+    ref="meshRef"
+    :user-data="day"
+  >
     <TresBoxGeometry />
     <TresMeshBasicMaterial
       :color="day.color"
@@ -18,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
+  import { dispose } from '@tresjs/core';
+  import { TresInstance } from '@tresjs/core/types.js';
   import FloatingText from 'src/components/FloatingText.vue';
   import { ICalendarDisplay } from 'src/definitions';
   import { onBeforeUnmount, shallowRef } from 'vue';
-  import { dispose } from '@tresjs/core';
-  import { TresInstance } from '@tresjs/core/types.js';
 
   defineProps<{ day: ICalendarDisplay }>();
 

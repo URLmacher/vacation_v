@@ -12,9 +12,13 @@
 <script setup lang="ts">
   import { GLTFModel } from '@tresjs/cientos';
   import { useTresContext } from '@tresjs/core';
+  import { ICalendarDisplay } from 'src/definitions';
   import {
+    Intersection,
     Mesh,
     MeshBasicMaterial,
+    Object3D,
+    Object3DEventMap,
     PlaneGeometry,
     Quaternion,
     Raycaster,
@@ -25,6 +29,10 @@
   import { ref } from 'vue';
 
   const { scene, camera } = useTresContext();
+
+  const emit = defineEmits<{
+    'hit:target': [day: ICalendarDisplay];
+  }>();
 
   const gunPosition = ref([-1000, -1000, -1000]);
   const impacts: Mesh[] = [];
@@ -44,10 +52,9 @@
   };
 
   const removeBulletHoles = (): void => {
-    console.log('remove');
     impacts.forEach((impactMesh) => {
       scene.value.remove(impactMesh);
-      impactMesh.geometry.dispose(); // Free memory
+      impactMesh.geometry.dispose();
     });
   };
 
@@ -74,6 +81,18 @@
     impacts.push(impactMesh);
   };
 
+  const handleTargetHit = (
+    intersects: Intersection<Object3D<Object3DEventMap>>[]
+  ): void => {
+    const hitTarget = intersects.find(
+      (intersect) => intersect.object.userData.isVacationDay
+    );
+    if (hitTarget) {
+      emit('hit:target', hitTarget.object.userData as ICalendarDisplay);
+      return;
+    }
+  };
+
   const handleShoot = (): void => {
     if (!camera.value) return;
     playGunSound();
@@ -84,10 +103,11 @@
     const intersects = raycaster.intersectObjects(scene.value.children, true);
 
     if (intersects.length > 0) {
-      const impactPoint = intersects?.[0]?.point;
+      const impactPoint = intersects[0]?.point;
       const impactNormal = intersects[0]?.face?.normal;
       if (impactPoint && impactNormal) {
         spawnBulletImpact(impactPoint, impactNormal);
+        handleTargetHit(intersects);
       }
     }
   };

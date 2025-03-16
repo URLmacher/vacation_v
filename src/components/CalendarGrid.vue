@@ -14,7 +14,7 @@
         v-for="(day, dayIndex) in week"
         :key="`day-${dayIndex}-${weekIndex}`"
       >
-        <CalendarDay :day="day" @click="handleDayClick(day)" />
+        <CalendarDay :day="day" />
       </TresGroup>
     </TresGroup>
   </TresGroup>
@@ -34,8 +34,6 @@
   } from 'src/utils/date.utils';
   import { computed, reactive, ref, shallowRef, toRefs, watch } from 'vue';
 
-  const emit = defineEmits<(e: 'click:day', val: ICalendarDisplay) => void>();
-
   const props = defineProps<{
     month: number;
     daysClickedOn: ICalendarDisplay[];
@@ -45,12 +43,6 @@
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
   const calendarDisplay = ref<ICalendarDisplay[][]>([]);
   const groupRef = shallowRef<TresInstance>();
-
-  const handleDayClick = (day: ICalendarDisplay): void => {
-    if (day.date && isVacationDay(day.date)) {
-      emit('click:day', day);
-    }
-  };
 
   const computePosition = (col: number, row: number): TAxis => {
     const centerX = ((grid.cols - 1) * grid.gutter) / 2;
@@ -87,6 +79,7 @@
           color: getBoxColor(date),
           date: date,
           dateLabel: date ? format(date, 'd') : '',
+          isVacationDay: !!date && isVacationDay(date),
           position: computePosition(j, i)
         });
       }
