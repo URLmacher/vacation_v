@@ -8,7 +8,11 @@
     />
   </Suspense>
   <Suspense>
-    <TresMesh ref="muzzleFlashRef" :visible="false">
+    <TresMesh
+      ref="muzzleFlashRef"
+      :visible="false"
+      :user-data="{ isNonTarget: true }"
+    >
       <TresSphereGeometry :args="[0.4, 32, 32]" />
       <TresMeshStandardMaterial
         :map="muzzleFlashTexture"
@@ -19,12 +23,14 @@
       />
     </TresMesh>
   </Suspense>
+  <WildExplosions ref="explosionsRef" />
 </template>
 
 <script setup lang="ts">
   import { GLTFModel } from '@tresjs/cientos';
   import { useTresContext } from '@tresjs/core';
   import gsap from 'gsap';
+  import WildExplosions from 'src/components/WildExplosions.vue';
   import { ICalendarDisplay } from 'src/definitions';
   import {
     Intersection,
@@ -59,6 +65,9 @@
   const bulletHoleTexture = textureLoader.load('/textures/bullet_hole.png');
   const muzzleFlashTexture = textureLoader.load('/textures/flash_shoot.png');
   const muzzleFlashRef = shallowRef<Mesh | undefined>();
+  const explosionsRef = shallowRef<
+    InstanceType<typeof WildExplosions> | undefined
+  >();
 
   const showMuzzleFlash = (): void => {
     const currentX = gunPosition.value[0];
@@ -115,23 +124,17 @@
     });
   };
 
-  const spawnBulletImpact = (
-    position: Vector3,
-    normal: Vector3,
-    object?: Object3D
-  ): void => {
-    if (!object?.visible || object.userData.isNonTarget) return;
-
+  const spawnBulletImpact = (position: Vector3, normal: Vector3): void => {
     const impactMaterial = new MeshBasicMaterial({
       depthWrite: false,
       map: bulletHoleTexture,
-      transparent: true
+      transparent: true,
+      userData: { isNonTarget: true }
     });
 
     const impactGeometry = new PlaneGeometry(0.5, 0.5);
     const impactMesh = new Mesh(impactGeometry, impactMaterial);
 
-    // Adjust position to avoid hitting the floor
     impactMesh.position.copy(position);
 
     const up =
@@ -152,10 +155,9 @@
     const hitTarget = intersects.find(
       (intersect) => intersect.object.userData.isVacationDay
     );
-    if (hitTarget) {
-      emit('hit:target', hitTarget.object.userData as ICalendarDisplay);
-      return;
-    }
+    if (!hitTarget) return;
+    emit('hit:target', hitTarget.object.userData as ICalendarDisplay);
+    return;
   };
 
   const handleShoot = (): void => {
@@ -168,14 +170,18 @@
     handleRecoil();
 
     const intersects = raycaster.intersectObjects(scene.value.children, true);
-
-    if (intersects.length > 0) {
-      const impactPoint = intersects[0]?.point;
-      const impactNormal = intersects[0]?.face?.normal;
-
-      if (impactPoint && impactNormal) {
-        // Pass the object that was hit to spawnBulletImpact
-        spawnBulletImpact(impactPoint, impactNormal, intersects[0]?.object);
+    const validTarget = intersects.find(
+      (intersect) =>
+        intersect.object &&
+        !intersect.object.userData.isNonTarget &&
+        intersect.object.visible
+    );
+    if (validTarget) {
+      const impactPoint = validTarget.point;
+      const impactNormal = validTarget.normal;
+      if (impactNormal) {
+        explosionsRef.value?.spawnExplosion?.(impactPoint);
+        spawnBulletImpact(impactPoint, impactNormal);
         handleTargetHit(intersects);
       }
     }
