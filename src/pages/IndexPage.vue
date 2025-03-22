@@ -26,17 +26,19 @@
         :controlsKeys="keyboardMap"
       >
         <Suspense>
-          <ShootyGun ref="shootyGunRef" @hit:target="handleDayClick"/>
+          <ShootyGun ref="shootyGunRef" @hit:target="handleDayClick" />
         </Suspense>
       </fpsControls>
     </TresCanvas>
     <button id="audioToggle">Audio</button>
+    <AimingReticle />
   </q-page>
 </template>
 
 <script setup lang="ts">
   import { fpsControls } from '@jaimebboyjt/tres-fps-controls';
   import { TresCanvas } from '@tresjs/core';
+  import AimingReticle from 'src/components/AimingReticle.vue';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
   import SandyBeach from 'src/components/SandyBeach.vue';
   import ShootyGun from 'src/components/ShootyGun.vue';
