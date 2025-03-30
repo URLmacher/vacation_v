@@ -8,6 +8,7 @@ export interface ICalendarDisplay {
   position: TAxis;
   color: string;
   isVacationDay: boolean;
+  isSelected: boolean;
 }
 
 export interface IParticle {

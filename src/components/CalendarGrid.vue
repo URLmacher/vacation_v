@@ -41,9 +41,9 @@
 
   const props = defineProps<{
     month: number;
-    daysClickedOn: ICalendarDisplay[];
+    daysConfirmed: ICalendarDisplay[];
   }>();
-  const { month, daysClickedOn } = toRefs(props);
+  const { month, daysConfirmed } = toRefs(props);
 
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
   const calendarDisplay = ref<ICalendarDisplay[][]>([]);
@@ -58,8 +58,8 @@
   };
 
   const getBoxColor = (date: Date | null): string => {
-    if (!date) return 'transparent';
-    if (isDateSelected(date, daysClickedOn.value)) return '#3af9d9';
+    if (!date) return '#ffffff';
+    if (isDateSelected(date, daysConfirmed.value)) return '#ffffff';
     if (isVacationDay(date)) return '#3af9d9';
     if (isWeekend(date)) return '#556270';
     return '#eff69c';
@@ -83,6 +83,7 @@
           color: getBoxColor(date),
           date: date,
           dateLabel: date ? format(date, 'd') : '',
+          isSelected: !!date && isDateSelected(date, daysConfirmed.value),
           isVacationDay: !!date && isVacationDay(date),
           position: computePosition(j, i)
         });
@@ -97,5 +98,5 @@
     return getNameOfMonth(month.value);
   });
 
-  watch([month, daysClickedOn], updateCalendarDisplay, { immediate: true });
+  watch([month, daysConfirmed], updateCalendarDisplay, { immediate: true });
 </script>

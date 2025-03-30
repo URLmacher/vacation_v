@@ -17,9 +17,10 @@
 }
 
 body {
+  background: var(--brown-1);
   min-height: 100vh;
   display: flex;
-  color: var(--color-text);
+  color: var(--violet-7);
   @include _font(400, 15px);
 }
 
@@ -36,4 +37,9 @@ body {
 
 .hidden {
   display: none;
+}
+
+.invisible {
+  opacity: 0;
+  visibility: hidden;
 }

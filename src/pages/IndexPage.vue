@@ -1,5 +1,5 @@
 <template>
-  <q-page @click="startAudio">
+  <q-page @click="startAudio" :class="{ invisible: !gameStarted }">
     <TresCanvas window-size>
       <Suspense>
         <SandyBeach />
@@ -8,7 +8,7 @@
         <CalendarGrid
           v-if="month === currentMonth"
           :month="month"
-          :days-clicked-on="daysClickedOn"
+          :days-confirmed="daysConfirmed"
         />
       </template>
 
@@ -36,7 +36,7 @@
       <AimingReticle />
     </template>
 
-    <DialogOverlay ref="dialogOverlayRef" @hide="startGame()" />
+    <DialogOverlay @hide="startGame()" :current-round="currentRound" />
   </q-page>
 </template>
 
@@ -45,22 +45,28 @@
   import { TresCanvas } from '@tresjs/core';
   import AimingReticle from 'src/components/AimingReticle.vue';
   import CalendarGrid from 'src/components/CalendarGrid.vue';
+  import DialogOverlay from 'src/components/DialogOverlay.vue';
   import SandyBeach from 'src/components/SandyBeach.vue';
   import ShootyGun from 'src/components/ShootyGun.vue';
-  import DialogOverlay from 'src/components/DialogOverlay.vue';
   import { DATES } from 'src/data';
   import { ICalendarDisplay } from 'src/definitions';
   import {
+    areAllVacationDaysSelected,
     isDateSelected,
     isEveryVacationDayOfMonthSelected,
     isVacationDay
   } from 'src/utils/date.utils';
   import { computed, onMounted, ref, useTemplateRef } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
+
+  const { resolve } = useRouter();
+  const { query } = useRoute();
 
   const shootyGunRef = useTemplateRef('shootyGunRef');
-  const dialogOverlayRef = useTemplateRef('dialogOverlayRef');
-  const daysClickedOn = ref<ICalendarDisplay[]>([]);
+
+  const daysConfirmed = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
+  const currentRound = ref<number>(1);
   const gameStarted = ref<boolean>(false);
   const backgroundSound = new Audio('/sounds/beach.mp3');
 
@@ -83,42 +89,46 @@
     if (
       !day.date ||
       !isVacationDay(day.date) ||
-      isDateSelected(day.date, daysClickedOn.value)
+      isDateSelected(day.date, daysConfirmed.value)
     ) {
       return;
     }
 
-    daysClickedOn.value = [...daysClickedOn.value, day];
+    daysConfirmed.value = [...daysConfirmed.value, day];
+
+    if (areAllVacationDaysSelected(daysConfirmed.value)) {
+      endGame();
+      return;
+    }
 
     if (
       currentMonth.value &&
-      isEveryVacationDayOfMonthSelected(currentMonth.value, daysClickedOn.value)
+      isEveryVacationDayOfMonthSelected(currentMonth.value, daysConfirmed.value)
     ) {
       switchMonth();
     }
   };
 
-  const months = computed<number[]>(() =>
-    DATES.reduce<number[]>((acc, dateStr) => {
-      const date = new Date(dateStr);
-      const month = date.getUTCMonth();
-      if (!acc.includes(month)) {
-        acc.push(month);
-      }
-
-      return acc;
-    }, [])
-  );
+  const months = computed<number[]>(() => {
+    const uniqueMonths = new Set(
+      DATES.map((dateStr) => {
+        const date = new Date(dateStr);
+        const month = date.getUTCMonth() + 1;
+        return month;
+      })
+    );
+    return Array.from(uniqueMonths);
+  });
 
   const switchMonth = (): void => {
-    const firstMonth = months.value[0];
-    if (firstMonth == null) return;
-    const currentIndex = currentMonth.value
-      ? months.value.indexOf(currentMonth.value)
-      : 0;
-    const nextIndex = (currentIndex + 1) % months.value.length;
+    if (!months.value.length) return;
+    const currentIndex =
+      currentMonth.value !== null
+        ? months.value.indexOf(currentMonth.value) + 1
+        : 0;
+
     shootyGunRef.value?.removeBulletHoles();
-    currentMonth.value = months.value?.[nextIndex] ?? null;
+    currentMonth.value = months.value[currentIndex] ?? null;
   };
 
   const handleControlLock = (): void => {
@@ -134,8 +144,18 @@
     gameStarted.value = true;
   };
 
+  const endGame = (): void => {
+    window.location.href = `${window.location.origin}${
+      resolve({
+        name: 'home',
+        query: { currentRound: ++currentRound.value }
+      }).href
+    }`;
+    window.location.reload();
+  };
+
   onMounted(() => {
-    dialogOverlayRef.value?.showDialog();
+    currentRound.value = parseInt(`${query?.currentRound}`) || 1;
     switchMonth();
   });
 </script>

@@ -67,3 +67,15 @@ export const isEveryVacationDayOfMonthSelected = (
     )
   );
 };
+
+export const areAllVacationDaysSelected = (
+  daysSelected: ICalendarDisplay[]
+): boolean => {
+  const allVacationDays = DATES.map((date) => new Date(date));
+  return allVacationDays.every((vacationDay) =>
+    daysSelected.some(
+      (selectedDay) =>
+        selectedDay.date && isSameDay(new Date(selectedDay.date), vacationDay)
+    )
+  );
+};

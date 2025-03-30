@@ -6,46 +6,66 @@
     persistent
   >
     <q-card class="dialog-overlay__card">
+      <ConfirmationCelebration
+        v-if="currentRound > 1"
+        class="dialog-overlay__celebration"
+      />
       <h1 class="dialog-overlay__title">
         {{ $t('vacationRequest', { year: YEAR }) }}
       </h1>
-      <img
-        src="public/textures/palm-leaf.png"
-        alt=""
-        class="dialog-overlay__img"
-      />
-      <q-btn class="dialog-overlay__btn" @click="hideDialog">{{
-        $t('confirmNow')
-      }}</q-btn>
+      <img src="/textures/palm-leaf.png" alt="" class="dialog-overlay__img" />
+      <q-btn class="dialog-overlay__btn" @click="hideDialog">
+        {{ currentRound > 1 ? $t('confirmAgain') : $t('confirmNow') }}
+      </q-btn>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
+  import { Fireworks } from 'fireworks-js';
+  import ConfirmationCelebration from 'src/components/ConfirmationCelebration.vue';
   import { YEAR } from 'src/data/index';
-  import { ref } from 'vue';
+  import { nextTick, ref, toRefs, watch } from 'vue';
 
   const emit = defineEmits<{
     hide: [];
   }>();
-  const dialogVisible = ref<boolean>(true);
 
-  const showDialog = (): void => {
-    dialogVisible.value = true;
-  };
+  const props = defineProps<{
+    currentRound: number;
+  }>();
+  const { currentRound } = toRefs(props);
+
+  const dialogVisible = ref<boolean>(true);
+  const fireworks = ref<Fireworks | null>(null);
 
   const hideDialog = (): void => {
     dialogVisible.value = false;
+    fireworks.value?.stop();
   };
 
-  defineExpose({
-    showDialog
-  });
+  const startFirework = async (): Promise<void> => {
+    if (currentRound.value < 2) return;
+    await nextTick();
+    const container = document.querySelector('.q-dialog__inner');
+    if (!container) return;
+    fireworks.value = new Fireworks(container, {});
+    fireworks.value.start();
+  };
+
+  watch(currentRound, startFirework, { immediate: true });
 </script>
 
 <style scoped lang="scss">
   .dialog-overlay {
     position: relative;
+
+    &__celebration {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -67%);
+    }
 
     &__title {
       color: var(--violet-7);
@@ -84,8 +104,9 @@
     }
 
     &__card {
-      overflow: hidden;
+      overflow: visible;
       padding: 24px;
+      z-index: 1;
       background-color: var(--yellow-1);
       height: 60vh;
       max-height: 260px;
@@ -135,6 +156,9 @@
     }
   }
 
+  :global(.q-dialog__inner > canvas) {
+    position: absolute;
+  }
   :global(.q-dialog__backdrop) {
     position: absolute;
     top: 0;
@@ -151,7 +175,7 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(20deg, var(--violet-1), transparent),
-      url(public/textures/noise.svg);
+      url(/textures/noise.svg);
     background-size: 100% 100%;
     background-repeat: no-repeat;
     filter: contrast(170%) brightness(1000%);
