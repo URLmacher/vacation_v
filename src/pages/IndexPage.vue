@@ -30,8 +30,13 @@
         </Suspense>
       </fpsControls>
     </TresCanvas>
-    <button id="audioToggle">Audio</button>
-    <AimingReticle />
+
+    <template v-if="gameStarted">
+      <button class="hidden" id="audioToggle"></button>
+      <AimingReticle />
+    </template>
+
+    <DialogOverlay ref="dialogOverlayRef" @hide="startGame()" />
   </q-page>
 </template>
 
@@ -42,6 +47,7 @@
   import CalendarGrid from 'src/components/CalendarGrid.vue';
   import SandyBeach from 'src/components/SandyBeach.vue';
   import ShootyGun from 'src/components/ShootyGun.vue';
+  import DialogOverlay from 'src/components/DialogOverlay.vue';
   import { DATES } from 'src/data';
   import { ICalendarDisplay } from 'src/definitions';
   import {
@@ -52,8 +58,10 @@
   import { computed, onMounted, ref, useTemplateRef } from 'vue';
 
   const shootyGunRef = useTemplateRef('shootyGunRef');
+  const dialogOverlayRef = useTemplateRef('dialogOverlayRef');
   const daysClickedOn = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
+  const gameStarted = ref<boolean>(false);
   const backgroundSound = new Audio('/sounds/beach.mp3');
 
   const keyboardMap = [
@@ -122,5 +130,12 @@
     await backgroundSound.play();
   };
 
-  onMounted(switchMonth);
+  const startGame = (): void => {
+    gameStarted.value = true;
+  };
+
+  onMounted(() => {
+    dialogOverlayRef.value?.showDialog();
+    switchMonth();
+  });
 </script>

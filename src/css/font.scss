@@ -1,21 +1,41 @@
 @font-face {
-  font-family: 'ethnocentric';
-  font-style: bold;
+  font-family: 'chakra';
+  font-weight: bold;
+  font-style: normal;
   src:
-    local('ethnocentric'),
-    url('../fonts/ethnocentric rg.otf') format('opentype');
+    local('chakra'),
+    url('../fonts/ChakraPetch-Bold.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: 'ethnocentric';
+  font-family: 'chakra';
+  font-weight: normal;
   font-style: normal;
   src:
-    local('ethnocentric'),
-    url('../fonts/ethnocentric rg.otf') format('opentype');
+    local('chakra'),
+    url('../fonts/ChakraPetch-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'chakra';
+  font-weight: medium;
+  font-style: normal;
+  src:
+    local('chakra'),
+    url('../fonts/ChakraPetch-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'chakra';
+  font-weight: semibold;
+  font-style: normal;
+  src:
+    local('chakra'),
+    url('../fonts/ChakraPetch-SemiBold.ttf') format('truetype');
 }
 
 @mixin _font($weight, $size) {
-  font-family: 'ethnocentric', Helvetica, Arial, cursive, sans-serif;
+  font-family: 'chakra', Helvetica, Arial, cursive, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: $weight;
@@ -35,65 +55,10 @@
 }
 
 h1 {
-  @include _font(bold, 90px);
+  @include _font(bold, 2.6rem);
   @include blockMargins();
-  letter-spacing: -1.5px;
-}
 
-h2 {
-  @include _font(bold, 52px);
-  @include blockMargins();
-  letter-spacing: -0.45px;
-}
-
-h3 {
-  @include _font(600, 44px);
-  @include blockMargins();
-  letter-spacing: -0.5px;
-}
-
-h4 {
-  @include _font(600, 28px);
-  @include blockMargins();
-  letter-spacing: 0.23px;
-}
-
-h5 {
-  @include _font(600, 20px);
-  @include blockMargins();
-  letter-spacing: bold;
-  line-height: 1.2;
-}
-
-h6 {
-  @include _font(500, 16px);
-  @include blockMargins();
-  letter-spacing: bold;
-  line-height: 1.25;
-}
-
-a,
-button {
-  @include _font(600, 2rem);
-  letter-spacing: 1.2px;
-  line-height: 1;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-p {
-  @include _font(bold, 15px);
-  @include blockMargins();
-  letter-spacing: 0.5px;
-  line-height: 1.27;
-}
-
-span {
-  @include blockMargins();
-}
-
-small {
-  @include _font(bold, 11px);
-  letter-spacing: 0.5px;
-  line-height: 1.27;
+  @include window-medium {
+    font-size: 3rem;
+  }
 }

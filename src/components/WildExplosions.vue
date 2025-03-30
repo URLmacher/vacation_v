@@ -36,7 +36,7 @@
     explosions.value = [
       ...explosions.value,
       {
-        color: '#ff6600',
+        color: '#ff0000',
         offset: targetPosition.clone(),
         particles: getParticles(),
         time: 0

@@ -1,5 +1,5 @@
-import enUS from './en-US';
+import { de } from 'src/i18n/de-DE/translations.de';
 
 export default {
-  'en-US': enUS
+  'de-DE': de
 };

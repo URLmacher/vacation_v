@@ -1,7 +1,6 @@
 @import './mixins';
 @import './font';
 @import './colors';
-@import './vacation';
 
 :root {
   --border-radius: 17px;
@@ -22,7 +21,6 @@ body {
   display: flex;
   color: var(--color-text);
   @include _font(400, 15px);
-  @include background-pattern;
 }
 
 #app {
@@ -34,4 +32,8 @@ body {
   height: 100vh;
   height: 100dvh;
   width: 100%;
+}
+
+.hidden {
+  display: none;
 }

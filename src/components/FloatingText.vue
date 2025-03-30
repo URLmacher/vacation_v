@@ -3,14 +3,14 @@
     <Text3D
       ref="componentRef"
       :text="text"
-      font="/fonts/pt_sans_regular.json"
+      font="/fonts/Chakra Petch_Regular.json"
       :position="position"
       :rotation="rotation"
       :size="size"
       :user-data="'isNonTarget'"
       :visible="visible"
     >
-      <TresMeshNormalMaterial />
+      <TresMeshStandardMaterial color="#951c95" />
     </Text3D>
   </Suspense>
 </template>

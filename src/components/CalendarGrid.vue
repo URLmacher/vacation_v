@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
   import { TresInstance } from '@tresjs/core/types.js';
-  import { format, isToday, isWeekend } from 'date-fns';
+  import { format, isWeekend } from 'date-fns';
   import CalendarDay from 'src/components/CalendarDay.vue';
   import FloatingText from 'src/components/FloatingText.vue';
   import { ICalendarDisplay, TAxis } from 'src/definitions';
@@ -58,12 +58,11 @@
   };
 
   const getBoxColor = (date: Date | null): string => {
-    if (!date) return '#fff';
-    if (isDateSelected(date, daysClickedOn.value)) return '#00A36C';
-    if (isVacationDay(date)) return '#00FFFF';
-    if (isWeekend(date)) return '#FFA07A';
-    if (isToday(date)) return '#90EE90';
-    return '#FFD700';
+    if (!date) return 'transparent';
+    if (isDateSelected(date, daysClickedOn.value)) return '#3af9d9';
+    if (isVacationDay(date)) return '#3af9d9';
+    if (isWeekend(date)) return '#556270';
+    return '#eff69c';
   };
 
   const updateCalendarDisplay = async (): Promise<void> => {

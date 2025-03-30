@@ -7,19 +7,19 @@
     :position="[0, 5, -20]"
   />
   <TresPointLight
-    color="#79573e"
+    color="#f7daa9"
     :intensity="5"
     :decay="0"
     :position="[35, 5, 0]"
   />
   <TresPointLight
-    color="#c27439"
+    color="#eff69c"
     :intensity="5"
     :decay="0"
     :position="[-35, 5, 0]"
   />
   <TresPointLight
-    color="#fff000"
+    color="#3af9d9"
     :intensity="5"
     :decay="0"
     :position="[0, 5, 20]"
@@ -33,7 +33,7 @@
     :position="[0, 25, 0]"
   />
   <TresRectAreaLight
-    color="#341212"
+    color="#ff0000"
     :decay="0"
     :width="1000"
     :height="1000"
