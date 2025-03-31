@@ -1,11 +1,16 @@
 <template>
   <BackgroundSky />
   <SceneLighting />
-  <Ocean :position="[0, -10, 0]" :user-data="'isNonTarget'" />
-  <TresMesh :position="[0, -10, 0]" :rotation="[-Math.PI / 2, 0, 0]">
+  <Ocean :position="[0, -10, 0]" :user-data="{ surface: ESurfaceType.WATER }" />
+  <TresMesh
+    :position="[0, -9.8, 0]"
+    :rotation="[-Math.PI / 2, 0, 0]"
+    :user-data="{ surface: ESurfaceType.SAND }"
+  >
     <TresPlaneGeometry :args="[100, 100, 200, 200]" />
     <TresMeshStandardMaterial
-      color="yellow"
+      :user-data="{ surface: ESurfaceType.SAND }"
+      color="#eff69c"
       :map="colorMap"
       :displacementMap="displacementMap"
       :normalMap="normalMap"
@@ -21,6 +26,7 @@
   import { useTexture } from '@tresjs/core';
   import BackgroundSky from 'src/components/BackgroundSky.vue';
   import SceneLighting from 'src/components/SceneLighting.vue';
+  import { ESurfaceType } from 'src/definitions';
 
   const [colorMap, displacementMap, normalMap, roughnessMap, aoMap] =
     await useTexture([

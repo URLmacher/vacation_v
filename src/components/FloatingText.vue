@@ -7,7 +7,7 @@
       :position="position"
       :rotation="rotation"
       :size="size"
-      :user-data="'isNonTarget'"
+      :user-data="{ surface }"
       :visible="visible"
     >
       <TresMeshStandardMaterial color="#951c95" />
@@ -19,7 +19,7 @@
   import { Text3D } from '@tresjs/cientos';
   import { dispose } from '@tresjs/core';
   import { TresInstance } from '@tresjs/core/types.js';
-  import { TAxis } from 'src/definitions';
+  import { ESurfaceType, TAxis } from 'src/definitions';
   import { onBeforeUnmount, shallowRef, toRefs } from 'vue';
 
   const props = withDefaults(
@@ -28,6 +28,7 @@
       position?: TAxis;
       rotation?: TAxis;
       size: number;
+      surface?: ESurfaceType;
       visible?: boolean;
     }>(),
     {

@@ -20,5 +20,14 @@ export interface IExplosionData {
   time: number;
   offset: Vector3;
   color: string;
+  scale: number;
   particles: IParticle[];
+}
+
+export enum ESurfaceType {
+  WATER = 'water',
+  SAND = 'sand',
+  TARGET = 'target',
+  NON_TARGET = 'non-target',
+  OTHER = 'other'
 }

@@ -3,6 +3,7 @@
     :text="monthLabel"
     :position="[0, 11.5, 0]"
     :size="0.8"
+    :surface="ESurfaceType.OTHER"
     :visible="true"
   />
   <TresGroup
@@ -30,7 +31,7 @@
   import { format, isWeekend } from 'date-fns';
   import CalendarDay from 'src/components/CalendarDay.vue';
   import FloatingText from 'src/components/FloatingText.vue';
-  import { ICalendarDisplay, TAxis } from 'src/definitions';
+  import { ESurfaceType, ICalendarDisplay, TAxis } from 'src/definitions';
   import {
     getDatesOfMonthFilled,
     getNameOfMonth,

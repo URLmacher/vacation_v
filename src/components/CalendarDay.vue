@@ -4,7 +4,10 @@
     :scale="[1.5, 0.5, 1.5]"
     ref="meshRef"
     :visible="!!day.date"
-    :user-data="day"
+    :user-data="{
+      day: day,
+      surface: day.isVacationDay ? ESurfaceType.TARGET : ESurfaceType.NON_TARGET
+    }"
   >
     <TresBoxGeometry />
     <TresMeshBasicMaterial
@@ -15,6 +18,9 @@
       :transparent="true"
     />
     <FloatingText
+      :surface="
+        day.isVacationDay ? ESurfaceType.TARGET : ESurfaceType.NON_TARGET
+      "
       :text="day.dateLabel"
       :position="[0, -0.9, 0]"
       :rotation="[1.5, 0, 0]"
@@ -28,7 +34,7 @@
   import { dispose } from '@tresjs/core';
   import { TresInstance } from '@tresjs/core/types.js';
   import FloatingText from 'src/components/FloatingText.vue';
-  import { ICalendarDisplay } from 'src/definitions';
+  import { ESurfaceType, ICalendarDisplay } from 'src/definitions';
   import { onBeforeUnmount, shallowRef } from 'vue';
 
   defineProps<{ day: ICalendarDisplay }>();
