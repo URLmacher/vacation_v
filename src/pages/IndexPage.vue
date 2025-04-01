@@ -6,6 +6,7 @@
       </Suspense>
       <template v-for="month of months" :key="month">
         <CalendarGrid
+          ref="calendarGridRef"
           v-if="month === currentMonth"
           :month="month"
           :days-confirmed="daysConfirmed"
@@ -56,13 +57,16 @@
     isEveryVacationDayOfMonthSelected,
     isVacationDay
   } from 'src/utils/date.utils';
-  import { computed, onMounted, ref, useTemplateRef } from 'vue';
+  import { computed, onMounted, ref, shallowRef, useTemplateRef } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
 
   const { resolve } = useRouter();
   const { query } = useRoute();
 
   const shootyGunRef = useTemplateRef('shootyGunRef');
+  const calendarGridRef = shallowRef<
+    InstanceType<typeof CalendarGrid>[] | undefined
+  >();
 
   const daysConfirmed = ref<ICalendarDisplay[]>([]);
   const currentMonth = ref<number | null>(null);
@@ -120,7 +124,7 @@
     return Array.from(uniqueMonths);
   });
 
-  const switchMonth = (): void => {
+  const switchMonth = async (): Promise<void> => {
     if (!months.value.length) return;
     const currentIndex =
       currentMonth.value !== null
@@ -128,7 +132,10 @@
         : 0;
 
     shootyGunRef.value?.removeBulletHoles();
+
+    await calendarGridRef.value?.[0]?.hide();
     currentMonth.value = months.value[currentIndex] ?? null;
+    await calendarGridRef.value?.[0]?.show();
   };
 
   const handleControlLock = (): void => {

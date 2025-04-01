@@ -20,7 +20,7 @@
         v-for="(day, dayIndex) in week"
         :key="`day-${dayIndex}-${weekIndex}`"
       >
-        <CalendarDay :day="day" />
+        <CalendarDay :day="day" ref="calendarDayRefs" />
       </TresGroup>
     </TresGroup>
   </TresGroup>
@@ -49,6 +49,9 @@
   const grid = reactive({ cols: 7, gutter: 2.2, rows: 6 });
   const calendarDisplay = ref<ICalendarDisplay[][]>([]);
   const groupRef = shallowRef<TresInstance>();
+  const calendarDayRefs = shallowRef<
+    InstanceType<typeof CalendarDay>[] | undefined
+  >();
 
   const computePosition = (col: number, row: number): TAxis => {
     const centerX = ((grid.cols - 1) * grid.gutter) / 2;
@@ -99,5 +102,20 @@
     return getNameOfMonth(month.value);
   });
 
+  const show = async (): Promise<void> => {
+    if (!calendarDayRefs.value) return;
+    await Promise.all(calendarDayRefs.value?.map((cD) => cD.show()));
+  };
+
+  const hide = async (): Promise<void> => {
+    if (!calendarDayRefs.value) return;
+    await Promise.all(calendarDayRefs.value?.map((cD) => cD.hide()));
+  };
+
   watch([month, daysConfirmed], updateCalendarDisplay, { immediate: true });
+
+  defineExpose({
+    hide,
+    show
+  });
 </script>
