@@ -1,40 +1,33 @@
-# Quasar App (quasar-project)
+🎯 Vacation V
 
-A Quasar Project
+An interactive twist on vacation approvals.
+✨ What is it?
 
-## Install the dependencies
-```bash
-yarn
-# or
+Vacation V is a playful web app where managers approve vacation requests by shooting vacation days off a calendar grid in a fun mini-game. It turns routine HR tasks into something engaging and memorable.
+
+⚙️ Built With
+
+    🎮 TresJS – 3D scenes in Vue, powered by Three.js
+
+    ⚡ Quasar Framework – Fast, responsive UI
+
+    🧠 Vue 3 + TypeScript with <script setup>
+
+🚀 Getting Started
+
+git clone https://github.com/URLmacher/vacation_v.git
+cd vacation_v
 npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
 quasar dev
-```
 
+🧩 Features
 
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
-```
+    Submit vacation requests
 
+    Playable approval game (shoot days off calendar!)
 
-### Format the files
-```bash
-yarn format
-# or
-npm run format
-```
+    Smooth animations and responsive design
 
+📄 License
 
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+MIT – Have fun, tweak it, and make it yours.
