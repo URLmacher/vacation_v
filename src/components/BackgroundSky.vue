@@ -2,26 +2,20 @@
 
 <script setup lang="ts">
   import { useTresContext } from '@tresjs/core';
+  import { EquirectangularReflectionMapping } from 'three';
+  import { EXRLoader } from 'three/examples/jsm/Addons.js';
   import { onMounted } from 'vue';
-  import { PMREMGenerator } from 'three';
-  import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
-  const { renderer, scene } = useTresContext();
+  const { scene } = useTresContext();
 
-  onMounted(() => {
-    const loader = new RGBELoader();
-    loader.load(
-      '/textures/kloofendal_overcast_puresky_2k.hdr',
-      (texture) => {
-        const pmremGenerator = new PMREMGenerator(renderer.value);
-        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-
-        scene.value.environment = envMap;
-        scene.value.background = texture;
-
-        texture.dispose();
-        pmremGenerator.dispose();
-      }
+  onMounted(async () => {
+    const loader = new EXRLoader();
+    const texture = await loader.loadAsync(
+      '/textures/evening_road_01_puresky_4k.exr'
     );
+
+    texture.mapping = EquirectangularReflectionMapping;
+    scene.value.background = texture;
+    scene.value.environment = texture;
   });
 </script>

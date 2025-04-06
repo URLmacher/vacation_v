@@ -14,7 +14,7 @@
         {{ $t('vacationRequest', { year: YEAR }) }}
       </h1>
       <img src="/textures/palm-leaf.png" alt="" class="dialog-overlay__img" />
-      <q-btn class="dialog-overlay__btn" @click="hideDialog">
+      <q-btn class="dialog-overlay__btn" @click="hideDialog" :loading="loading">
         {{ currentRound > 1 ? $t('confirmAgain') : $t('confirmNow') }}
       </q-btn>
     </q-card>
@@ -33,6 +33,7 @@
 
   const props = defineProps<{
     currentRound: number;
+    loading: boolean;
   }>();
   const { currentRound } = toRefs(props);
 
