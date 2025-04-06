@@ -4,10 +4,11 @@ import {
   format,
   getDay,
   isSameDay,
+  isWeekend,
   startOfMonth
 } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { DATES, YEAR } from 'src/data';
+import { DATES, HOLIDAY_DATES, YEAR } from 'src/data';
 import { ICalendarDisplay } from 'src/definitions';
 
 export const getDaysOfMonth = (month: number): Date[] => {
@@ -38,6 +39,13 @@ export const getNameOfMonth = (month: number): string => {
 
 export const isVacationDay = (val: string | Date): boolean => {
   return DATES.some((date) => isSameDay(date, new Date(val)));
+};
+
+export const isHolidayOrWeekend = (val: string | Date): boolean => {
+  return (
+    isWeekend(val) ||
+    HOLIDAY_DATES.some((date) => isSameDay(date, new Date(val)))
+  );
 };
 
 export const isDateSelected = (

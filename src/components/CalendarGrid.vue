@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
   import { TresInstance } from '@tresjs/core/types.js';
-  import { format, isWeekend } from 'date-fns';
+  import { format } from 'date-fns';
   import CalendarDay from 'src/components/CalendarDay.vue';
   import FloatingText from 'src/components/FloatingText.vue';
   import { ESurfaceType, ICalendarDisplay, TAxis } from 'src/definitions';
@@ -36,6 +36,7 @@
     getDatesOfMonthFilled,
     getNameOfMonth,
     isDateSelected,
+    isHolidayOrWeekend,
     isVacationDay
   } from 'src/utils/date.utils';
   import { computed, reactive, ref, shallowRef, toRefs, watch } from 'vue';
@@ -65,7 +66,7 @@
     if (!date) return '#ffffff';
     if (isDateSelected(date, daysConfirmed.value)) return '#ffffff';
     if (isVacationDay(date)) return '#3af9d9';
-    if (isWeekend(date)) return '#556270';
+    if (isHolidayOrWeekend(date)) return '#556270';
     return '#eff69c';
   };
 
